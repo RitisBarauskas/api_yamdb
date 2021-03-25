@@ -4,8 +4,7 @@ from rest_framework.permissions import BasePermission
 
 class IsAuthor(BasePermission):
     def has_object_permission(self, request, view, obj):
-        return (request.user.is_authenticated and
-                obj.author == request.user)
+        return request.user.is_authenticated and obj.author == request.user
 
 
 class IsModerator(BasePermission):
@@ -38,9 +37,7 @@ class IsAdminOrReadOnly(BasePermission):
 
 class IsSuperuser(BasePermission):
     def has_permission(self, request, view):
-        return (request.user.is_authenticated
-                and request.user.is_superuser)
+        return request.user.is_authenticated and request.user.is_superuser
 
     def has_object_permission(self, request, view, obj):
-        return (request.user.is_authenticated
-                and request.user.is_superuser)
+        return request.user.is_authenticated and request.user.is_superuser
