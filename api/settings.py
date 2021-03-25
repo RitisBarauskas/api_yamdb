@@ -33,3 +33,7 @@ COMMENT_VERBOSE_NAME = 'comment'
 TITLE_RELATED_NAME = 'titles'
 REVIEW_RELATED_NAME = 'reviews'
 COMMENT_RELATED_NAME = 'comments'
+
+USER_ROLE = 'user'
+MODERATOR_ROLE = 'moderator'
+ADMIN_ROLE = 'admin'

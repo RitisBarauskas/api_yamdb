@@ -6,6 +6,12 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from .settings import *
 
 
+class Roles(models.TextChoices):
+    USER = USER_ROLE
+    MODERATOR = MODERATOR_ROLE
+    ADMIN = ADMIN_ROLE
+
+
 class User(AbstractUser):
     first_name = models.CharField(
         FIRST_NAME_VERBOSE_NAME,
@@ -37,6 +43,17 @@ class User(AbstractUser):
         max_length=ROLE_MAX_LENGTH,
         blank=True
     )
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ('username',)
+
+    @property
+    def is_admin(self):
+        return self.is_staff or self.role == Roles.ADMIN
+
+    @property
+    def is_moderator(self):
+        return self.role == Roles.MODERATOR
 
 
 class Category(models.Model):
