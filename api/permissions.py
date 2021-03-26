@@ -1,13 +1,16 @@
-from rest_framework import permissions
-from rest_framework.permissions import BasePermission
+from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 
 class IsAuthor(BasePermission):
+    """Editing an object is only possible for the Author."""
+
     def has_object_permission(self, request, view, obj):
         return request.user.is_authenticated and obj.author == request.user
 
 
 class IsModerator(BasePermission):
+    """Editing an object is only possible for the Moderator."""
+
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.is_moderator
 
@@ -16,6 +19,8 @@ class IsModerator(BasePermission):
 
 
 class IsAdmin(BasePermission):
+    """Editing an object is only possible for the Admin."""
+
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.is_admin
 
@@ -24,18 +29,21 @@ class IsAdmin(BasePermission):
 
 
 class IsAdminOrReadOnly(BasePermission):
+    """Readable by all.
+
+    The object can only be edited by the Administrator.
+    """
+
     def has_permission(self, request, view):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        return request.user.is_authenticated and request.user.is_admin
+        return request.method in SAFE_METHODS or request.user.is_authenticated and request.user.is_admin
 
     def has_object_permission(self, request, view, obj):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        return request.user.is_authenticated and request.user.is_admin
+        return request.method in SAFE_METHODS or request.user.is_authenticated and request.user.is_admin
 
 
 class IsSuperuser(BasePermission):
+    """Editing an object is only possible for the Superuser."""
+
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.is_superuser
 

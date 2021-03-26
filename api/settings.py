@@ -6,15 +6,12 @@ SLUG_MAX_LENGTH = 100
 EMAIL_MAX_LENGTH = 255
 TITLE_NAME_MAX_LENGTH = 200
 
-YEAR_MAX_DIGITS = 4
-YEAR_DECIMAL_PLACES = 0
-
-SCORE_DEFAULT = 1
+SCORE_DEFAULT = 0
 SCORE_MIN_VALUE = 1
 SCORE_MAX_VALUE = 10
 
-FIRST_NAME_VERBOSE_NAME = 'first name'
-LAST_NAME_VERBOSE_NAME = 'last name'
+CONFIRMATION_CODE_LEN = 10
+
 USERNAME_VERBOSE_NAME = 'username'
 AUTHOR_VERBOSE_NAME = 'author'
 REVIEW_VERBOSE_NAME = 'review'
@@ -29,7 +26,7 @@ DESCRIPTION_VERBOSE_NAME = 'description'
 YEAR_VERBOSE_NAME = 'year'
 PUB_DATE_VERBOSE_NAME = 'pub date'
 COMMENT_VERBOSE_NAME = 'comment'
-
+CONFIRMATION_CODE_VERBOSE_NAME = 'confirmation code'
 TITLE_RELATED_NAME = 'titles'
 REVIEW_RELATED_NAME = 'reviews'
 COMMENT_RELATED_NAME = 'comments'
@@ -37,3 +34,18 @@ COMMENT_RELATED_NAME = 'comments'
 USER_ROLE = 'user'
 MODERATOR_ROLE = 'moderator'
 ADMIN_ROLE = 'admin'
+
+READ_ONLY_FIELDS = ('id', 'title', 'pub_date')
+SEARCH_FIELDS = ('name',)
+AUTHOR_SLUG_FIELD = 'username'
+SLUG_FIELD = 'slug'
+
+EMAIL_ADDRESS = 'register@yambd.fake'
+EMAIL_SUBJECT = 'Yamdb registration, confirmation code.'
+
+BASE_USERNAME = 'User'
+
+TITLE_NAME_FILTER_FIELD = 'name'
+TITLE_CATEGORY_FILTER_FIELD = 'category__slug'
+TITLE_GENRE_FILTER_FIELD = 'genre__slug'
+TITLE_FILTER_FIELDS = ('name', 'category', 'genre', 'year')

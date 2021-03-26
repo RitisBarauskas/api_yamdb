@@ -1,5 +1,5 @@
 # YaMDb API
-Download OpenAPI specification: [Download](http://127.0.0.1:8000/static/redoc.yaml).
+OpenAPI specification: [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc).
 
 API queries start with `/api/v1/`
 

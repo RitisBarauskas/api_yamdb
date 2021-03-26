@@ -1,6 +1,6 @@
-from rest_framework.mixins import CreateModelMixin, ListModelMixin
-from rest_framework.viewsets import GenericViewSet
+from random import choices
+from string import digits, ascii_uppercase
 
 
-class ObjectViwSetMixin(CreateModelMixin, ListModelMixin, GenericViewSet):
-    pass
+def generate_confirmation_code(length):
+    return ''.join(choices(digits + ascii_uppercase, k=length))

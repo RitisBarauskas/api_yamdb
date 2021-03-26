@@ -1,18 +1,21 @@
-from django.conf.urls import include
-from django.urls import path
+from django.urls import include, path
 from rest_framework.routers import DefaultRouter
-from rest_framework_simplejwt.views import (
-        TokenObtainPairView,
-        TokenRefreshView,
-    )
 
-from .views import UserViewSet
+from .views import (CategoryViewSet, CommentViewSet, GenreViewSet,
+                    RegisterView, ReviewViewSet, TitlesViewSet, TokenView,
+                    UsersViewSet)
 
 router_v1 = DefaultRouter()
-router_v1.register('users', UserViewSet, basename='user')
+router_v1.register('users', UsersViewSet, basename='users')
+router_v1.register('titles', TitlesViewSet, basename='title')
+router_v1.register('genres', GenreViewSet, basename='genre')
+router_v1.register('categories', CategoryViewSet, basename='category')
+router_v1.register(r'titles/(?P<title_id>[0-9]+)/reviews', ReviewViewSet, basename='review')
+router_v1.register(r'titles/(?P<title_id>[0-9]+)/reviews/(?P<review_id>[0-9]+)/comments', CommentViewSet,
+                   basename='comment')
 
 urlpatterns = [
     path('v1/', include(router_v1.urls)),
-    path('api/v1/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/v1/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('v1/auth/email/', RegisterView.as_view(), name='get_confirmation_code'),
+    path('v1/auth/token/', TokenView.as_view(), name='get_token'),
 ]
