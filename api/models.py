@@ -1,9 +1,10 @@
+from api.settings import AUTHOR_VERBOSE_NAME, PUB_DATE_VERBOSE_NAME, REVIEW_RELATED_NAME, REVIEW_VERBOSE_NAME, SCORE_DEFAULT, SCORE_MAX_VALUE, SCORE_MIN_VALUE, SCORE_VERBOSE_NAME, TEXT_MAX_LENGTH, TILE_VERBOSE_NAME
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from .utils import generate_confirmation_code
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models.deletion import DO_NOTHING
-from .settings import *
+# from .settings import *
 
 
 ROLE_VERBOSE_NAME = 'role'
