@@ -1,4 +1,3 @@
-
 from django.shortcuts import get_object_or_404
 from api.utils import generate_confirmation_code
 from rest_framework.views import APIView
@@ -68,3 +67,4 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
+
