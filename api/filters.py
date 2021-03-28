@@ -1,7 +1,8 @@
-from django_filters import rest_framework as filters
 from django_filters import CharFilter, NumberFilter
-from .settings import *
+from django_filters import rest_framework as filters
+
 from .models import Title
+from .settings import *
 
 
 class TitleFilter(filters.FilterSet):
