@@ -5,14 +5,11 @@ from rest_framework_simplejwt.views import (TokenObtainPairView,
 
 from .views import CategoriesViewSet, GenresViewSet, TitlesViewSet
 
-
 router = DefaultRouter()
 router.register('categories', CategoriesViewSet, basename='categories')
 router.register('genres', GenresViewSet, basename='genres')
 router.register('titles', TitlesViewSet, basename='titles')
-router.register('titles/<int:titles_id>', TitlesViewSet, basename='titles')
-router.register('genres/<str:slug>', GenresViewSet, basename='genres')
-router.register('categories/<str:slug>', CategoriesViewSet, basename='categories')
+
 
 
 urlpatterns = [
