@@ -20,10 +20,11 @@ FIRST_NAME_MAX_LENGTH = 30
 LAST_NAME_MAX_LENGTH = 30
 
 
-class UserRole(models.Choices):
-    user = 'user', 'Пользователь'
-    moderator = 'moderator', 'Модератор'
-    admin = 'admin', 'Администратор'
+USER_ROLES = [
+    ('admin', 'Администратор'),
+    ('moderator', 'Модератор'),
+    ('user', 'Пользователь'),
+]
 
 
 class User(AbstractUser):
@@ -48,9 +49,11 @@ class User(AbstractUser):
     )
     role = models.CharField(
         ROLE_VERBOSE_NAME,
+        choices=USER_ROLES,
         max_length=ROLE_MAX_LENGTH,
-        blank=True
-    )
+        default='user',
+        null=True,
+        blank=True)  
     email = models.EmailField(
         EMAIL_VERBOSE_NAME,
         max_length=EMAIL_MAX_LENGTH,
@@ -72,11 +75,11 @@ class User(AbstractUser):
 
     @property
     def is_admin(self):
-        return self.is_staff or self.role == UserRole.admin
+        return self.is_staff or self.role == 'admin'
 
     @property
     def is_moderator(self):
-        return self.role == UserRole.moderator
+        return self.role == 'moderator'
     
     def __str__(self):
         return str(self.username)

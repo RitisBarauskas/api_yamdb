@@ -58,9 +58,9 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     permission_classes = (IsAuthenticated, IsAdmin | IsSuperuser)
     lookup_field = 'username'
-    
-    @action(detail=False, methods=('get', 'patch'), url_path='me', permission_classes=(IsAuthenticated,))
-    def get_or_update_self(self, request):
+
+    @action(detail=False, methods=('get', 'patch'), permission_classes=(IsAuthenticated,))
+    def me(self, request):
         if request.method == 'GET':
             return Response(self.get_serializer(request.user, many=False).data)
         else:
