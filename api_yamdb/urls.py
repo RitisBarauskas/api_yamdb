@@ -15,8 +15,7 @@ Including another URLconf
 """
 from django import urls
 from django.contrib import admin
-from django.urls import path
-from django.urls.conf import include
+from django.urls import include, path
 from django.views.generic import TemplateView
 
 urlpatterns = [
@@ -27,4 +26,5 @@ urlpatterns = [
         TemplateView.as_view(template_name='redoc.html'),
         name='redoc'
     ),
+    path('api/', include('api.urls'))
 ]
