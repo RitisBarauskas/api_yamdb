@@ -15,7 +15,8 @@ Including another URLconf
 """
 from django import urls
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
+from django.urls.conf import include
 from django.views.generic import TemplateView
 
 urlpatterns = [
