@@ -4,7 +4,6 @@ from django.contrib.auth.models import AbstractUser
 from .utils import generate_confirmation_code
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models.deletion import DO_NOTHING
-# from .settings import *
 
 
 ROLE_VERBOSE_NAME = 'role'
