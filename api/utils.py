@@ -1,5 +1,4 @@
 from random import choices
-from string import digits, ascii_uppercase
 from string import ascii_uppercase, digits
 
 from rest_framework.mixins import (CreateModelMixin, DestroyModelMixin,

@@ -1,23 +1,25 @@
-from django.shortcuts import get_object_or_404
-from api.utils import generate_confirmation_code
-from rest_framework.views import APIView
-from .models import CONFIRMATION_CODE_MAX_LENGTH, User, Category, Genre, Title
-from rest_framework import viewsets, status
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
 from django.core.mail import send_mail
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.decorators import action
 from django.db.models import Avg
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import BasePermission
+from rest_framework.permissions import (AllowAny, BasePermission,
+                                        IsAuthenticated)
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
+from rest_framework_simplejwt.tokens import RefreshToken
+
 from api.filters import TitleFilter
+from api.utils import generate_confirmation_code
+
+from .models import CONFIRMATION_CODE_MAX_LENGTH, Category, Genre, Title, User
 from .permissions import *
-from .serializers import (UserSerializer, CategoriesSerializer, GenresSerializer,
-                          TitleSerializerGet, TitlesSerializer)
+from .serializers import (CategoriesSerializer, GenresSerializer,
+                          TitleSerializerGet, TitlesSerializer, UserSerializer)
 from .utils import ObjectViewSetMixin
 
 
