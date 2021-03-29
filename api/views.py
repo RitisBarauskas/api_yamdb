@@ -37,7 +37,7 @@ class RegisterView(APIView):
             data = {
                 'email': email,
                 'confirmation_code': confirmation_code,
-                'username': f'{BASE_USERNAME}{User.objects.aggregate(Max("id"))["id__max"] + 1}'
+                'username': email
             }
             serializer = UserSerializer(data=data)
             serializer.is_valid(raise_exception=True)
