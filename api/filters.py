@@ -1,17 +1,16 @@
-from django_filters import CharFilter, NumberFilter
-from django_filters import rest_framework as filters
+from django_filters import FilterSet, CharFilter
 
 from .models import Title
 from .settings import *
 
 
-class TitleFilter(filters.FilterSet):
+class TitleFilter(FilterSet):
+    """Filter works by name, category, genre, year."""
+
     name = CharFilter(field_name=TITLE_NAME_FILTER_FIELD, lookup_expr='contains')
-    genre = CharFilter(field_name='genre__slug')
-    category = CharFilter(field_name='category__slug')
-    year = NumberFilter
-    
+    category = CharFilter(field_name=TITLE_CATEGORY_FILTER_FIELD, lookup_expr='exact')
+    genre = CharFilter(field_name=TITLE_GENRE_FILTER_FIELD, lookup_expr='exact')
 
     class Meta:
         model = Title
-        fields = ['name', 'category', 'genre', 'year']
+        fields = TITLE_FILTER_FIELDS

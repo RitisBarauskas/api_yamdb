@@ -2,73 +2,102 @@ import csv
 import datetime
 import sqlite3
 
-base = sqlite3.connect('db.sqlite3')
-cursor = base.cursor()
+conn = sqlite3.connect('db.sqlite3')
+c = conn.cursor()
 
 with open("data/category.csv", "r") as data:
-    for row in csv.DictReader(data):
-        cursor.execute(
+    reader = csv.DictReader(data)
+    for row in reader:
+        id = row['id']
+        name = row['name']
+        slug = row['slug']
+        c.execute(
             "INSERT INTO api_category "
             "(id, name, slug) "
             "VALUES(?, ?, ?)",
-            (row['id'], row['name'], row['slug'])
+            (id, name, slug)
         )
-        base.commit()
+        conn.commit()
 
 with open("data/comments.csv", "r") as data:
-    for row in csv.DictReader(data):
-        cursor.execute(
+    reader = csv.DictReader(data)
+    for row in reader:
+        id = row['id']
+        review_id = row['review_id']
+        text = row['text']
+        author_id = row['author']
+        pub_date = row['pub_date']
+        c.execute(
             "INSERT INTO api_comment "
             "(id, text, pub_date, author_id, review_id) "
             "VALUES(?, ?, ?, ?, ?)",
-            (row['id'],  row['text'], row['pub_date'],
-             row['author'], row['review_id'])
+            (id, text, pub_date, author_id, review_id)
         )
-        base.commit()
+        conn.commit()
 
 with open("data/genre.csv", "r") as data:
-    for row in csv.DictReader(data):
-        cursor.execute(
+    reader = csv.DictReader(data)
+    for row in reader:
+        id = row['id']
+        name = row['name']
+        slug = row['slug']
+        c.execute(
             "INSERT INTO api_genre "
             "(id, name, slug) "
             "VALUES(?, ?, ?)",
-            (row['id'], row['name'], row['slug'])
+            (id, name, slug)
         )
-        base.commit()
+        conn.commit()
 
 with open("data/genre_title.csv", "r") as data:
-    for row in csv.DictReader(data):
-        cursor.execute(
+    reader = csv.DictReader(data)
+    for row in reader:
+        id = row['id']
+        title_id = row['title_id']
+        genre_id = row['genre_id']
+        c.execute(
             "INSERT INTO api_title_genre "
             "(id, title_id, genre_id) "
             "VALUES(?, ?, ?)",
-            (row['id'], row['title_id'], row['genre_id'])
+            (id, title_id, genre_id)
         )
-        base.commit()
+        conn.commit()
 
 with open("data/review.csv", "r") as data:
-    for row in csv.DictReader(data):
-        cursor.execute(
+    reader = csv.DictReader(data)
+    for row in reader:
+        id = row['id']
+        title_id = row['title_id']
+        text = row['text']
+        author_id = row['author']
+        score = row['score']
+        pub_date = row['pub_date']
+        c.execute(
             "INSERT INTO api_review "
             "(id, text, score, pub_date, author_id, title_id) "
             "VALUES(?, ?, ?, ?, ?, ?)",
-            (row['id'], row['text'], row['score'],
-             row['pub_date'], row['author'], row['title_id'])
+            (id, text, score, pub_date, author_id, title_id)
         )
-        base.commit()
+        conn.commit()
 
 with open("data/titles.csv", "r") as data:
-    for row in csv.DictReader(data):
-        cursor.execute(
+    reader = csv.DictReader(data)
+    for row in reader:
+        id = row['id']
+        name = row['name']
+        year = row['year']
+        category_id = row['category']
+        c.execute(
             "INSERT INTO api_title "
             "(id, name, year, category_id) "
             "VALUES(?, ?, ?, ?)",
-            (row['id'], row['name'], row['year'], row['category'])
+            (id, name, year, category_id)
         )
-        base.commit()
+        conn.commit()
 
 with open("data/users.csv", "r") as data:
-    for row in csv.DictReader(data):
+    reader = csv.DictReader(data)
+    for row in reader:
         id = row['id']
         password = '12345678'
         username = row['username']
@@ -90,7 +119,7 @@ with open("data/users.csv", "r") as data:
             is_superuser = True
             is_staff = False
             is_active = True
-        cursor.execute(
+        c.execute(
             "INSERT INTO api_user "
             "(id, password, username, email, role, bio, first_name, "
             "last_name, is_superuser, is_staff, is_active, date_joined) "
@@ -98,6 +127,6 @@ with open("data/users.csv", "r") as data:
             (id, password, username, email, role, bio, first_name,
              last_name, is_superuser, is_staff, is_active, date_joined)
         )
-        base.commit()
+        conn.commit()
 
-base.close()
+conn.close()
