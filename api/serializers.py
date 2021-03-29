@@ -1,7 +1,9 @@
-from rest_framework.serializers import ModelSerializer, CharField, SlugRelatedField, ValidationError, IntegerField
+from rest_framework.serializers import (CharField, IntegerField,
+                                        ModelSerializer, SlugRelatedField,
+                                        ValidationError)
 
 from .models import Category, Comment, Genre, Review, Title, User
-from .settings import *
+from .settings import AUTHOR_SLUG_FIELD, SLUG_FIELD, USER_ROLE
 
 
 class UserSerializer(ModelSerializer):
@@ -10,7 +12,15 @@ class UserSerializer(ModelSerializer):
     role = CharField(default=USER_ROLE)
 
     class Meta:
-        fields = ('first_name', 'last_name', 'username', 'bio', 'email', 'role', 'confirmation_code')
+        fields = (
+            'first_name',
+            'last_name',
+            'username',
+            'bio',
+            'email',
+            'role',
+            'confirmation_code'
+        )
         model = User
         extra_kwargs = {
             'confirmation_code': {'write_only': True},
@@ -30,8 +40,10 @@ class ReviewSerializer(ModelSerializer):
         model = Review
 
     def validate(self, attrs):
-        is_exist = Review.objects.filter(author=self.context['request'].user,
-                                         title=self.context['view'].kwargs.get('title_id')).exists()
+        is_exist = Review.objects.filter(
+            author=self.context['request'].user,
+            title=self.context['view'].kwargs.get('title_id')
+        ).exists()
         if is_exist and self.context['request'].method == 'POST':
             raise ValidationError()
         return attrs
@@ -81,8 +93,15 @@ class TitleListSerializer(ModelSerializer):
 class TitleCreateSerializer(ModelSerializer):
     """Serialiser for the creation of works."""
 
-    category = SlugRelatedField(SLUG_FIELD, queryset=Category.objects.all())
-    genre = SlugRelatedField(SLUG_FIELD, queryset=Genre.objects.all(), many=True)
+    category = SlugRelatedField(
+        SLUG_FIELD,
+        queryset=Category.objects.all()
+    )
+    genre = SlugRelatedField(
+        SLUG_FIELD,
+        queryset=Genre.objects.all(),
+        many=True
+    )
 
     class Meta:
         fields = '__all__'

@@ -48,4 +48,3 @@ class UserAdmin(ModelAdmin):
     """User administration."""
 
     list_display = ('role',)
-

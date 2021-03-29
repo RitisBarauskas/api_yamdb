@@ -1,5 +1,5 @@
 from random import choices
-from string import digits, ascii_uppercase
+from string import ascii_uppercase, digits
 
 
 def generate_confirmation_code(length):
