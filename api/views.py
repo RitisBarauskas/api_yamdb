@@ -1,4 +1,4 @@
-from django.db.models import Avg, Max
+from django.db.models import Avg
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK
 from rest_framework.filters import SearchFilter
@@ -56,8 +56,7 @@ class TokenView(APIView):
     def post(self, request):
         user = get_object_or_404(User, email=request.data.get('email'))
         if user.confirmation_code != request.data.get('confirmation_code'):
-            return Response({'confirmation_code': 'Incorrect code for this email'},
-                            status=HTTP_400_BAD_REQUEST)
+            return Response({'confirmation_code': 'Incorrect code for this email'}, status=HTTP_400_BAD_REQUEST)
         return Response({'token': self.get_token(user)}, status=HTTP_200_OK)
 
 
@@ -120,9 +119,11 @@ class CommentViewSet(ModelViewSet):
                                  pk=self.kwargs.get('review_id')).comments.all()
 
     def perform_create(self, serializer):
-        review = get_object_or_404(Review.objects.filter(title_id=self.kwargs.get('title_id')),
-                                   pk=self.kwargs.get('review_id'))
-        serializer.save(author=self.request.user, review=review)
+        serializer.save(
+            author=self.request.user,
+            review=get_object_or_404(Review.objects.filter(title_id=self.kwargs.get('title_id')),
+                                     pk=self.kwargs.get('review_id'))
+        )
 
 
 class ReviewViewSet(ModelViewSet):
