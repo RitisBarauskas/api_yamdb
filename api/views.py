@@ -20,7 +20,16 @@ from .models import CONFIRMATION_CODE_MAX_LENGTH, Category, Genre, Title, User
 from .permissions import *
 from .serializers import (CategoriesSerializer, GenresSerializer,
                           TitleSerializerGet, TitlesSerializer, UserSerializer)
-from .utils import ObjectViewSetMixin
+from rest_framework.mixins import (CreateModelMixin, DestroyModelMixin,
+                                   ListModelMixin)
+from rest_framework.viewsets import GenericViewSet
+
+
+class ObjectViewSetMixin(ListModelMixin,
+                         CreateModelMixin,
+                         DestroyModelMixin,
+                         GenericViewSet):
+    pass
 
 
 class CreateUser(APIView):

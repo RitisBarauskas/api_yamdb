@@ -79,8 +79,6 @@ class User(AbstractUser):
         default=generate_confirmation_code(CONFIRMATION_CODE_MAX_LENGTH)
     )
 
-    REQUIRED_FIELDS = ['role', 'email']
-
     @property
     def is_admin(self):
         return self.is_staff or self.role == 'admin'
