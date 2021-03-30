@@ -39,7 +39,7 @@ class RegisterView(APIView):
     def post(request):
         email = request.data.get('email')
         user = User.objects.filter(email=email)
-        if len(user):
+        if user.count():
             confirmation_code = user[0].confirmation_code
         else:
             confirmation_code = generate_confirmation_code(
