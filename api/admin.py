@@ -47,4 +47,5 @@ class CommentAdmin(ModelAdmin):
 class UserAdmin(ModelAdmin):
     """User administration."""
 
-    list_display = ('role',)
+    list_display = ('email', 'username', 'role')
+    empty_value_display = '-пусто-'

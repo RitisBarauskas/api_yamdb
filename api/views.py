@@ -1,3 +1,5 @@
+import uuid
+
 from django.db.models import Avg
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
@@ -14,6 +16,8 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from api_yamdb.settings import EMAIL_ADDRESS, EMAIL_SUBJECT
+
 from .filters import TitleFilter
 from .models import Category, Genre, Review, Title, User
 from .permissions import (IsAdmin, IsAdminOrReadOnly, IsAuthor, IsModerator,
@@ -22,9 +26,6 @@ from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, ReviewSerializer,
                           TitleCreateSerializer, TitleListSerializer,
                           UserSerializer)
-from .settings import (CONFIRMATION_CODE_LEN, EMAIL_ADDRESS, EMAIL_SUBJECT,
-                       SEARCH_FIELDS)
-from .utils import generate_confirmation_code
 
 CUSTOM_PERMISSIONS = (
     IsAuthenticatedOrReadOnly,
@@ -38,13 +39,16 @@ class RegisterView(APIView):
     @staticmethod
     def post(request):
         email = request.data.get('email')
+        if (email is None):
+            return Response(
+                {'email': 'Incorrect or None'},
+                status=HTTP_400_BAD_REQUEST
+            )
         user = User.objects.filter(email=email)
-        if len(user):
+        if user.count():
             confirmation_code = user[0].confirmation_code
         else:
-            confirmation_code = generate_confirmation_code(
-                CONFIRMATION_CODE_LEN
-            )
+            confirmation_code = str(uuid.uuid4())
             data = {
                 'email': email,
                 'confirmation_code': confirmation_code,
@@ -123,7 +127,7 @@ class CategoryViewSet(CreateListDestroyViewSet):
     serializer_class = CategorySerializer
     pagination_class = PageNumberPagination
     permission_classes = (IsAdminOrReadOnly,)
-    search_fields = SEARCH_FIELDS
+    search_fields = ('name',)
     lookup_field = 'slug'
 
 
@@ -132,7 +136,7 @@ class GenreViewSet(CreateListDestroyViewSet):
     serializer_class = GenreSerializer
     pagination_class = PageNumberPagination
     permission_classes = (IsAdminOrReadOnly,)
-    search_fields = SEARCH_FIELDS
+    search_fields = ('name',)
     lookup_field = 'slug'
 
 

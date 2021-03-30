@@ -147,3 +147,4 @@ dmypy.json
 
 # папки со статикой и медиа
 media/
+csv_to_sql.py

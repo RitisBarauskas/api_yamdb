@@ -3,13 +3,12 @@ from rest_framework.serializers import (CharField, IntegerField,
                                         ValidationError)
 
 from .models import Category, Comment, Genre, Review, Title, User
-from .settings import AUTHOR_SLUG_FIELD, SLUG_FIELD, USER_ROLE
 
 
 class UserSerializer(ModelSerializer):
     """User serialiser."""
 
-    role = CharField(default=USER_ROLE)
+    role = CharField(default='user')
 
     class Meta:
         fields = (
@@ -32,7 +31,7 @@ class UserSerializer(ModelSerializer):
 class ReviewSerializer(ModelSerializer):
     """Review serialiser."""
 
-    author = SlugRelatedField(AUTHOR_SLUG_FIELD, read_only=True, many=False)
+    author = SlugRelatedField('username', read_only=True, many=False)
 
     class Meta:
         read_only_fields = ('id', 'title', 'pub_date')
@@ -45,14 +44,14 @@ class ReviewSerializer(ModelSerializer):
             title=self.context['view'].kwargs.get('title_id')
         ).exists()
         if is_exist and self.context['request'].method == 'POST':
-            raise ValidationError()
+            raise ValidationError('You have already left your review')
         return attrs
 
 
 class CommentSerializer(ModelSerializer):
     """Comment serialiser."""
 
-    author = SlugRelatedField(AUTHOR_SLUG_FIELD, read_only=True, many=False)
+    author = SlugRelatedField('username', read_only=True, many=False)
 
     class Meta:
         read_only_fields = ('id', 'review', 'pub_date')
@@ -64,7 +63,7 @@ class CategorySerializer(ModelSerializer):
     """Category serialiser."""
 
     class Meta:
-        fields = ('name', 'slug')
+        exclude = ('id',)
         model = Category
         lookup_field = 'slug'
 
@@ -73,7 +72,7 @@ class GenreSerializer(ModelSerializer):
     """Genre serialiser."""
 
     class Meta:
-        fields = ('name', 'slug')
+        exclude = ('id',)
         model = Genre
         lookup_field = 'slug'
 
@@ -94,11 +93,11 @@ class TitleCreateSerializer(ModelSerializer):
     """Serialiser for the creation of works."""
 
     category = SlugRelatedField(
-        SLUG_FIELD,
+        'slug',
         queryset=Category.objects.all()
     )
     genre = SlugRelatedField(
-        SLUG_FIELD,
+        'slug',
         queryset=Genre.objects.all(),
         many=True
     )
