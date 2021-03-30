@@ -1,3 +1,4 @@
+from api_yamdb.settings import EMAIL_ADDRESS, EMAIL_SUBJECT
 from django.db.models import Avg
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
@@ -22,8 +23,6 @@ from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, ReviewSerializer,
                           TitleCreateSerializer, TitleListSerializer,
                           UserSerializer)
-from .settings import (CONFIRMATION_CODE_LEN, EMAIL_ADDRESS, EMAIL_SUBJECT,
-                       SEARCH_FIELDS)
 from .utils import generate_confirmation_code
 
 CUSTOM_PERMISSIONS = (
@@ -42,9 +41,7 @@ class RegisterView(APIView):
         if len(user):
             confirmation_code = user[0].confirmation_code
         else:
-            confirmation_code = generate_confirmation_code(
-                CONFIRMATION_CODE_LEN
-            )
+            confirmation_code = generate_confirmation_code(10)
             data = {
                 'email': email,
                 'confirmation_code': confirmation_code,
@@ -123,7 +120,7 @@ class CategoryViewSet(CreateListDestroyViewSet):
     serializer_class = CategorySerializer
     pagination_class = PageNumberPagination
     permission_classes = (IsAdminOrReadOnly,)
-    search_fields = SEARCH_FIELDS
+    search_fields = ('name',)
     lookup_field = 'slug'
 
 
@@ -132,7 +129,7 @@ class GenreViewSet(CreateListDestroyViewSet):
     serializer_class = GenreSerializer
     pagination_class = PageNumberPagination
     permission_classes = (IsAdminOrReadOnly,)
-    search_fields = SEARCH_FIELDS
+    search_fields = ('name',)
     lookup_field = 'slug'
 
 
