@@ -1,14 +1,15 @@
-from django.contrib.auth.models import AbstractUser
 import datetime
+import uuid
+
+from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import (CASCADE, CharField, DateTimeField, EmailField,
-                              ForeignKey, IntegerField, ManyToManyField, Model,
-                              PositiveSmallIntegerField, SlugField, TextField, TextChoices)
+                              ForeignKey, ManyToManyField, Model,
+                              PositiveSmallIntegerField, SlugField,
+                              TextChoices, TextField)
 from django.db.models.deletion import DO_NOTHING
-
-from .utils import generate_confirmation_code
+from django.utils.translation import gettext_lazy as _
 
 SCORE_VALIDATORS = (
     MinValueValidator(1),
@@ -43,9 +44,9 @@ class User(AbstractUser):
     )
     confirmation_code = CharField(
         verbose_name='confirmation code',
-        max_length=10,
+        max_length=100,
         null=True,
-        default=generate_confirmation_code(10)
+        default=str(uuid.uuid4())
     )
 
     @property
@@ -55,10 +56,11 @@ class User(AbstractUser):
     @property
     def is_moderator(self):
         return self.role == 'moderator'
-    
+
     class Meta:
-         verbose_name = "user"
-         verbose_name_plural = "users"
+        verbose_name = "user"
+        verbose_name_plural = "users"
+
 
 class Category(Model):
     """Types of works (Movies, Books, Music)."""
@@ -78,8 +80,8 @@ class Category(Model):
         return self.name
 
     class Meta:
-         verbose_name = "category"
-         verbose_name_plural = "categories"
+        verbose_name = "category"
+        verbose_name_plural = "categories"
 
 
 class Genre(Model):
@@ -101,10 +103,10 @@ class Genre(Model):
 
     def __str__(self):
         return self.name
-    
+
     class Meta:
-         verbose_name = "genre"
-         verbose_name_plural = "genres"
+        verbose_name = "genre"
+        verbose_name_plural = "genres"
 
 
 class Title(Model):
@@ -143,14 +145,14 @@ class Title(Model):
         validators=[my_year_validator],
         null=True,
         db_index=True
-    )    
+    )
 
     def __str__(self):
         return self.name
 
     class Meta:
-         verbose_name = "title"
-         verbose_name_plural = "titles"
+        verbose_name = "title"
+        verbose_name_plural = "titles"
 
 
 class Review(Model):
@@ -192,10 +194,8 @@ class Review(Model):
 
     class Meta:
         ordering = ('pub_date',)
-    
-    class Meta:
-         verbose_name = "review"
-         verbose_name_plural = "reviews"
+        verbose_name = "review"
+        verbose_name_plural = "reviews"
 
 
 class Comment(Model):
@@ -229,5 +229,5 @@ class Comment(Model):
         return self.text
 
     class Meta:
-         verbose_name = "comment"
-         verbose_name_plural = "comments"
+        verbose_name = "comment"
+        verbose_name_plural = "comments"
