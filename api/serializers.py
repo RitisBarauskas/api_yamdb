@@ -45,7 +45,7 @@ class ReviewSerializer(ModelSerializer):
             title=self.context['view'].kwargs.get('title_id')
         ).exists()
         if is_exist and self.context['request'].method == 'POST':
-            raise ValidationError()
+            raise ValidationError('You have already left your rview')
         return attrs
 
 
