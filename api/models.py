@@ -1,81 +1,87 @@
+import datetime
+import uuid
+
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import (CASCADE, CharField, DateTimeField, EmailField,
-                              ForeignKey, IntegerField, ManyToManyField, Model,
-                              PositiveSmallIntegerField, SlugField, TextField)
+                              ForeignKey, ManyToManyField, Model,
+                              PositiveSmallIntegerField, SlugField,
+                              TextChoices, TextField)
 from django.db.models.deletion import DO_NOTHING
-
-from .settings import (ADMIN_ROLE, AUTHOR_VERBOSE_NAME, BIO_MAX_LENGTH,
-                       BIO_VERBOSE_NAME, CATEGORY_NAME_VERBOSE_NAME,
-                       COMMENT_RELATED_NAME, COMMENT_VERBOSE_NAME,
-                       CONFIRMATION_CODE_LEN, CONFIRMATION_CODE_VERBOSE_NAME,
-                       DESCRIPTION_VERBOSE_NAME, EMAIL_MAX_LENGTH,
-                       EMAIL_VERBOSE_NAME, GENRE_VERBOSE_NAME, MODERATOR_ROLE,
-                       NAME_MAX_LENGTH, PUB_DATE_VERBOSE_NAME,
-                       REVIEW_RELATED_NAME, REVIEW_VERBOSE_NAME,
-                       ROLE_MAX_LENGTH, ROLE_VERBOSE_NAME, SCORE_DEFAULT,
-                       SCORE_MAX_VALUE, SCORE_MIN_VALUE, SCORE_VERBOSE_NAME,
-                       SLUG_MAX_LENGTH, TEXT_MAX_LENGTH, TITLE_NAME_MAX_LENGTH,
-                       TITLE_RELATED_NAME, TITLE_VERBOSE_NAME,
-                       YEAR_VERBOSE_NAME)
-from .utils import generate_confirmation_code
+from django.utils.translation import gettext_lazy as _
 
 SCORE_VALIDATORS = (
-    MinValueValidator(SCORE_MIN_VALUE),
-    MaxValueValidator(SCORE_MAX_VALUE)
+    MinValueValidator(1),
+    MaxValueValidator(10)
 )
 
 
 class User(AbstractUser):
     """User augmented fields."""
 
+    class RoleUser(TextChoices):
+        USER = 'user', _('Пользователь')
+        MODERATOR = 'moderator', _('Модератор')
+        ADMIN = 'admin', _('Администратор')
+
     bio = TextField(
-        BIO_VERBOSE_NAME,
-        max_length=BIO_MAX_LENGTH,
+        verbose_name='bio',
+        max_length=1000,
         blank=True
     )
     role = CharField(
-        ROLE_VERBOSE_NAME,
-        max_length=ROLE_MAX_LENGTH,
-        blank=True
+        verbose_name='role',
+        max_length=50,
+        blank=True,
+        choices=RoleUser.choices,
+        default=RoleUser.USER
     )
     email = EmailField(
-        EMAIL_VERBOSE_NAME,
-        max_length=EMAIL_MAX_LENGTH,
+        verbose_name='email',
+        max_length=255,
         unique=True
     )
     confirmation_code = CharField(
-        CONFIRMATION_CODE_VERBOSE_NAME,
-        max_length=CONFIRMATION_CODE_LEN,
+        verbose_name='confirmation code',
+        max_length=100,
         null=True,
-        default=generate_confirmation_code(CONFIRMATION_CODE_LEN)
+        default=str(uuid.uuid4())
     )
 
     @property
     def is_admin(self):
-        return self.is_staff or self.role == ADMIN_ROLE
+        return self.is_staff or self.role == 'admin'
 
     @property
     def is_moderator(self):
-        return self.role == MODERATOR_ROLE
+        return self.role == 'moderator'
+
+    class Meta:
+        verbose_name = "user"
+        verbose_name_plural = "users"
 
 
 class Category(Model):
     """Types of works (Movies, Books, Music)."""
 
     name = CharField(
-        CATEGORY_NAME_VERBOSE_NAME,
-        max_length=NAME_MAX_LENGTH,
+        verbose_name='category',
+        max_length=100,
         blank=True,
         null=True
     )
     slug = SlugField(
-        max_length=SLUG_MAX_LENGTH,
+        max_length=100,
         unique=True
     )
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = "category"
+        verbose_name_plural = "categories"
 
 
 class Genre(Model):
@@ -85,52 +91,68 @@ class Genre(Model):
     """
 
     name = CharField(
-        GENRE_VERBOSE_NAME,
-        max_length=NAME_MAX_LENGTH,
+        verbose_name='genre',
+        max_length=100,
         blank=True,
         null=True
     )
     slug = SlugField(
-        max_length=SLUG_MAX_LENGTH,
+        max_length=100,
         unique=True
     )
 
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = "genre"
+        verbose_name_plural = "genres"
+
 
 class Title(Model):
     """Works for which reviews are written."""
 
+    def my_year_validator(value):
+        if value < 1308 or value > datetime.datetime.now().year:
+            raise ValidationError(
+                _('%(value)s is not a correcrt year!'),
+                params={'value': value},
+            )
+
     name = CharField(
-        TITLE_VERBOSE_NAME,
-        max_length=TITLE_NAME_MAX_LENGTH,
+        verbose_name='title',
+        max_length=200,
         blank=True,
         null=True
     )
     genre = ManyToManyField(
         Genre,
-        related_name=TITLE_RELATED_NAME
+        related_name='title'
     )
     category = ForeignKey(
         Category,
-        related_name=TITLE_RELATED_NAME,
+        related_name='title',
         null=True,
         on_delete=DO_NOTHING
     )
     description = TextField(
-        DESCRIPTION_VERBOSE_NAME,
+        verbose_name='description',
         blank=True,
         null=True
     )
-    year = IntegerField(
-        YEAR_VERBOSE_NAME,
+    year = PositiveSmallIntegerField(
+        verbose_name='year',
+        validators=[my_year_validator],
         null=True,
         db_index=True
     )
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = "title"
+        verbose_name_plural = "titles"
 
 
 class Review(Model):
@@ -140,28 +162,28 @@ class Review(Model):
     """
 
     text = TextField(
-        REVIEW_VERBOSE_NAME,
-        max_length=TEXT_MAX_LENGTH
+        verbose_name='review',
+        max_length=2000
     )
     author = ForeignKey(
         User,
-        verbose_name=AUTHOR_VERBOSE_NAME,
+        verbose_name='author',
         on_delete=CASCADE,
-        related_name=REVIEW_RELATED_NAME
+        related_name='reviews'
     )
     title = ForeignKey(
         Title,
-        verbose_name=TITLE_VERBOSE_NAME,
+        verbose_name='title',
         on_delete=CASCADE,
-        related_name=REVIEW_RELATED_NAME
+        related_name='reviews'
     )
     pub_date = DateTimeField(
-        PUB_DATE_VERBOSE_NAME,
+        verbose_name='pub date',
         auto_now_add=True
     )
     score = PositiveSmallIntegerField(
-        SCORE_VERBOSE_NAME,
-        default=SCORE_DEFAULT,
+        verbose_name='score',
+        default=0,
         validators=SCORE_VALIDATORS,
         blank=False,
         null=False
@@ -169,6 +191,11 @@ class Review(Model):
 
     def __str__(self):
         return self.title
+
+    class Meta:
+        ordering = ('pub_date',)
+        verbose_name = "review"
+        verbose_name_plural = "reviews"
 
 
 class Comment(Model):
@@ -178,25 +205,29 @@ class Comment(Model):
     """
 
     text = TextField(
-        COMMENT_VERBOSE_NAME,
-        max_length=TEXT_MAX_LENGTH
+        verbose_name='comment',
+        max_length=2000
     )
     author = ForeignKey(
         User,
         on_delete=CASCADE,
-        related_name=COMMENT_RELATED_NAME,
-        verbose_name=AUTHOR_VERBOSE_NAME
+        related_name='comments',
+        verbose_name='author'
     )
     review = ForeignKey(
         Review,
         on_delete=CASCADE,
-        related_name=COMMENT_RELATED_NAME,
-        verbose_name=REVIEW_VERBOSE_NAME
+        related_name='comments',
+        verbose_name='review'
     )
     pub_date = DateTimeField(
-        PUB_DATE_VERBOSE_NAME,
+        verbose_name='pub date',
         auto_now_add=True
     )
 
     def __str__(self):
         return self.text
+
+    class Meta:
+        verbose_name = "comment"
+        verbose_name_plural = "comments"
