@@ -64,8 +64,8 @@ class CategorySerializer(ModelSerializer):
     """Category serialiser."""
 
     class Meta:
-        fields = ('name', 'slug')
         model = Category
+        exclude = ('id', )
         lookup_field = 'slug'
 
 
@@ -73,8 +73,8 @@ class GenreSerializer(ModelSerializer):
     """Genre serialiser."""
 
     class Meta:
-        fields = ('name', 'slug')
         model = Genre
+        exclude = ('id', )
         lookup_field = 'slug'
 
 
