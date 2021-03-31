@@ -1,15 +1,14 @@
-import datetime
 import uuid
 
 from django.contrib.auth.models import AbstractUser
-from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import (CASCADE, CharField, DateTimeField, EmailField,
                               ForeignKey, ManyToManyField, Model,
                               PositiveSmallIntegerField, SlugField,
                               TextChoices, TextField)
 from django.db.models.deletion import DO_NOTHING
-from django.utils.translation import gettext_lazy as _
+
+from .validators import validator_pub_year
 
 SCORE_VALIDATORS = (
     MinValueValidator(1),
@@ -21,9 +20,9 @@ class User(AbstractUser):
     """User augmented fields."""
 
     class RoleUser(TextChoices):
-        USER = 'user', _('Пользователь')
-        MODERATOR = 'moderator', _('Модератор')
-        ADMIN = 'admin', _('Администратор')
+        USER = 'user', 'Пользователь'
+        MODERATOR = 'moderator', 'Модератор'
+        ADMIN = 'admin', 'Администратор'
 
     bio = TextField(
         verbose_name='bio',
@@ -49,6 +48,10 @@ class User(AbstractUser):
         default=str(uuid.uuid4())
     )
 
+    class Meta:
+        verbose_name = 'user'
+        verbose_name_plural = 'users'
+
     @property
     def is_admin(self):
         return self.is_staff or self.role == 'admin'
@@ -56,10 +59,6 @@ class User(AbstractUser):
     @property
     def is_moderator(self):
         return self.role == 'moderator'
-
-    class Meta:
-        verbose_name = "user"
-        verbose_name_plural = "users"
 
 
 class Category(Model):
@@ -76,12 +75,12 @@ class Category(Model):
         unique=True
     )
 
+    class Meta:
+        verbose_name = 'category'
+        verbose_name_plural = 'categories'
+
     def __str__(self):
         return self.name
-
-    class Meta:
-        verbose_name = "category"
-        verbose_name_plural = "categories"
 
 
 class Genre(Model):
@@ -101,23 +100,16 @@ class Genre(Model):
         unique=True
     )
 
+    class Meta:
+        verbose_name = 'genre'
+        verbose_name_plural = 'genres'
+
     def __str__(self):
         return self.name
-
-    class Meta:
-        verbose_name = "genre"
-        verbose_name_plural = "genres"
 
 
 class Title(Model):
     """Works for which reviews are written."""
-
-    def my_year_validator(value):
-        if value < 1308 or value > datetime.datetime.now().year:
-            raise ValidationError(
-                _('%(value)s is not a correcrt year!'),
-                params={'value': value},
-            )
 
     name = CharField(
         verbose_name='title',
@@ -142,17 +134,17 @@ class Title(Model):
     )
     year = PositiveSmallIntegerField(
         verbose_name='year',
-        validators=[my_year_validator],
+        validators=[validator_pub_year],
         null=True,
         db_index=True
     )
 
+    class Meta:
+        verbose_name = 'title'
+        verbose_name_plural = 'titles'
+
     def __str__(self):
         return self.name
-
-    class Meta:
-        verbose_name = "title"
-        verbose_name_plural = "titles"
 
 
 class Review(Model):
@@ -189,13 +181,13 @@ class Review(Model):
         null=False
     )
 
-    def __str__(self):
-        return self.title
-
     class Meta:
         ordering = ('pub_date',)
-        verbose_name = "review"
-        verbose_name_plural = "reviews"
+        verbose_name = 'review'
+        verbose_name_plural = 'reviews'
+
+    def __str__(self):
+        return self.title
 
 
 class Comment(Model):
@@ -225,9 +217,9 @@ class Comment(Model):
         auto_now_add=True
     )
 
+    class Meta:
+        verbose_name = 'comment'
+        verbose_name_plural = 'comments'
+
     def __str__(self):
         return self.text
-
-    class Meta:
-        verbose_name = "comment"
-        verbose_name_plural = "comments"

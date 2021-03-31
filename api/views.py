@@ -39,15 +39,13 @@ class RegisterView(APIView):
     @staticmethod
     def post(request):
         email = request.data.get('email')
-        if (email is None):
+        if email is None:
             return Response(
                 {'email': 'Incorrect or None'},
                 status=HTTP_400_BAD_REQUEST
             )
-        user = User.objects.filter(email=email)
-        if user.count():
-            confirmation_code = user[0].confirmation_code
-        else:
+        user = User.objects.filter(email=email).first()
+        if user is None:
             confirmation_code = str(uuid.uuid4())
             data = {
                 'email': email,
@@ -57,6 +55,8 @@ class RegisterView(APIView):
             serializer = UserSerializer(data=data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
+        else:
+            confirmation_code = user[0].confirmation_code
         user.send_mail(subject=EMAIL_SUBJECT, message=confirmation_code,
                        from_email=EMAIL_ADDRESS)
         return Response({'email': email})
@@ -91,6 +91,14 @@ class UsersViewSet(ModelViewSet):
         if request.method == 'GET':
             return Response(self.get_serializer(request.user, many=False).data)
         else:
+            if (
+                request.user.role != 'admin'
+                and request.data.get('role') is not None
+            ):
+                return Response(
+                    {'role': 'Only Admin can change roles users'},
+                    status=HTTP_400_BAD_REQUEST
+                )
             serializer = self.get_serializer(
                 instance=request.user,
                 data=request.data,
